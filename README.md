@@ -1,7 +1,7 @@
 # Proyecto Final – Pruebas de Carga y Rendimiento
 
 Este proyecto final tiene como propósito diseñar, ejecutar y analizar pruebas de rendimiento sobre un servicio REST desarrollado durante el curso.  
-El equipo deberá aplicar técnicas de pruebas de carga utilizando k6, definir objetivos de nivel de servicio (SLO), interpretar métricas de rendimiento y documentar defectos relacionados con desempeño.
+El equipo deberá aplicar técnicas de pruebas de carga utilizando **k6 o JMeter** (una de las dos pistas del taller, a elección del equipo), definir objetivos de nivel de servicio (SLO), interpretar métricas de rendimiento y documentar defectos relacionados con desempeño.
 
 El enfoque no es únicamente ejecutar pruebas, sino analizar técnicamente el comportamiento del sistema bajo distintas condiciones de carga y proponer mejoras fundamentadas.
 
@@ -52,9 +52,13 @@ Cada escenario debe estar correctamente configurado y documentado.
 perf-project/
  ├─ src/
  ├─ perf/
- │   ├─ scripts/
+ │   ├─ scripts/                      # pista k6
  │   │   ├─ register_person_k6.js
  │   │   └─ voter_k6.js
+ │   ├─ jmeter/                       # pista JMeter (alternativa a scripts/)
+ │   │   ├─ plan.jmx
+ │   │   ├─ escenarios/*.properties
+ │   │   └─ verificar_slo.py
  │   ├─ data/
  │   ├─ results/
  │   ├─ defectos_rendimiento.md
@@ -76,13 +80,18 @@ Ejecución del servicio (ejemplo, esto puede cambiar dependiendo del proyecto):
 mvn clean spring-boot:run
 ```
 
-Ejecución de pruebas:
+Ejecución de pruebas, según la pista elegida:
 
 ```
 k6 run perf/scripts/register_person_k6.js --env SCENARIO=load
 ```
 
-Los resultados deben almacenarse automáticamente en `/perf/results`.
+```
+jmeter -n -t perf/jmeter/plan.jmx -q perf/jmeter/escenarios/load.properties -l perf/results/load.jtl -e -o perf/results/load-report
+python perf/jmeter/verificar_slo.py perf/results/load.jtl
+```
+
+Los resultados deben almacenarse automáticamente en `/perf/results`: el `summary-*.json` de k6, o el `.jtl` y el `summary-jmeter-*.json` de JMeter. En JMeter la puerta de calidad (SLO) no viene incorporada: el verificador del taller, o un equivalente propio, es parte de la entrega.
 
 ---
 
@@ -167,7 +176,7 @@ Este proyecto introduce la dimensión temporal y de resiliencia del sistema.
 | **Criterios de evaluación** | **Indicadores de cumplimiento** | **Excelente (5 pts)** | **Bueno (4 pts)** | **Necesita mejorar (3.5 pts)** | **Deficiente (2.5 pts)** | **No cumple (0 pts)** |
 |------------------------------|---------------------------------|------------------------|--------------------|---------------------------------|---------------------------|------------------------|
 | **Diseño de escenarios de rendimiento** | Baseline, Load, Stress, Spike, Soak y Regresión correctamente configurados. | Escenarios progresivos, técnicamente justificados y reproducibles. | Escenarios completos con leves inconsistencias. | Faltan uno o dos escenarios o sin justificación técnica. | Configuración incorrecta o sin progresión lógica. | No implementa escenarios requeridos. |
-| **Implementación técnica de scripts k6** | Uso correcto de VUs, stages, thresholds y dataset. | Scripts parametrizados, organizados y totalmente funcionales. | Scripts funcionales con leves errores de estructura. | Funcionan parcialmente o con hardcode excesivo. | Presentan errores de ejecución. | No entrega scripts funcionales. |
+| **Implementación técnica (scripts k6 o plan JMeter)** | Uso correcto de usuarios virtuales, rampas, umbrales de SLO (thresholds en k6, verificador sobre el `.jtl` en JMeter) y dataset. | Scripts o plan parametrizados, organizados y totalmente funcionales; verifican código HTTP y resultado de negocio. | Funcionales con leves errores de estructura. | Funcionan parcialmente, con hardcode excesivo o solo verifican el 200. | Presentan errores de ejecución. | No entrega scripts ni plan funcionales. |
 | **Definición y validación de SLO** | Objetivos claros y medibles (latencia, error rate, etc.). | SLO bien definidos, medidos y analizados en todos los escenarios. | SLO definidos pero análisis parcial. | SLO poco claros o sin validación consistente. | SLO mal definidos o sin evidencia. | No define SLO. |
 | **Análisis de métricas de rendimiento** | Interpretación de p95, p99, throughput y error rate. | Análisis comparativo profundo entre escenarios y versiones. | Análisis correcto pero superficial. | Reporta métricas sin interpretación sólida. | Solo copia resultados sin análisis. | No presenta análisis. |
 | **Gestión de defectos de rendimiento** | Registro estructurado y seguimiento. | Documento completo con evidencia, impacto y propuesta de mejora. | Registro con evidencia parcial. | Lista defectos sin análisis profundo. | Registro mínimo o incompleto. | No presenta defectos. |
