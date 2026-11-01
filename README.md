@@ -1,6 +1,6 @@
 # Proyecto Final – Pruebas de Carga y Rendimiento
 
-Este proyecto final tiene como propósito diseñar, ejecutar y analizar pruebas de rendimiento sobre un servicio REST desarrollado durante el curso.  
+Este proyecto final tiene como propósito diseñar, ejecutar y analizar pruebas de rendimiento sobre el **servicio REST del caso del equipo**, el mismo que se construyó en los proyectos de Pruebas Unitarias y de Integración (ver el [catálogo de casos](https://github.com/CesarAVegaF312/TYVS-Proyecto_Pruebas_Unitarias/blob/master/casos/README.md)).  
 El equipo deberá aplicar técnicas de pruebas de carga utilizando **k6 o JMeter** (una de las dos pistas del taller, a elección del equipo), definir objetivos de nivel de servicio (SLO), interpretar métricas de rendimiento y documentar defectos relacionados con desempeño.
 
 El enfoque no es únicamente ejecutar pruebas, sino analizar técnicamente el comportamiento del sistema bajo distintas condiciones de carga y proponer mejoras fundamentadas.
@@ -21,11 +21,11 @@ El enfoque no es únicamente ejecutar pruebas, sino analizar técnicamente el co
 
 ## 3. Alcance Técnico
 
-El equipo podrá elegir uno de los siguientes enfoques:
+Las pruebas se ejecutan sobre el `POST` principal del **caso asignado** (por ejemplo `POST /prestamos` o `POST /inscripciones`), en el mismo repositorio del proyecto. Los datos de carga deben cubrir **todos los resultados** de la ficha, no solo el aprobado: un sistema que responde rápido a los rechazos y lento a las aprobaciones (o al revés) es un hallazgo.
 
-1. Realizar pruebas sobre un endpoint real de un aplicativo en ambiente controlado.
-2. Implementar el endpoint `/voter/register`.
-3. Aplicar pruebas sobre un microservicio desarrollado previamente en el curso.
+El servicio externo del caso se reemplaza por un doble con latencia **configurable**: así se puede medir qué pasa con el p95 cuando la dependencia se pone lenta, sin depender de un sistema que no se controla.
+
+Si el servicio del caso no está disponible por una causa justificada, y solo con aprobación del profesor, se puede usar el `/register` de la Registraduría del taller.
 
 El sistema debe ejecutarse localmente o mediante contenedor Docker.
 
@@ -99,7 +99,9 @@ Los resultados deben almacenarse automáticamente en `/perf/results`: el `summar
 
 El equipo debe definir al menos dos SLO claros y medibles.
 
-Ejemplos:
+La ficha del caso trae un **SLO de partida** y el patrón de carga del negocio (la apertura de agenda, el cierre de convocatoria, el viernes de quincena). Úselo como punto de partida: justifíquelo o ajústelo con los datos de la línea base, y documente la decisión. Un SLO copiado de la ficha sin medir no cuenta como justificado.
+
+Ejemplos de forma:
 
 - p95 < 300 ms
 - Error rate < 1 %
